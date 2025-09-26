@@ -15,18 +15,39 @@ useEffect(() => {
 }, [])
 
 async function getUsuarios() {
-  const {data,error} = await supabase.from("usuarios").select();
+  const {data,error} = await supabase
+    .from("usuarios")
+    .select(`
+        *,
+        cargos_usuarios:cargos_usuarios!id_usuario (
+            fecha_inicio,
+            cargos(cargo)
+        )
+    `); 
+  
   if(error){
     console.error(error);
     return;
   }
-  setUsuarios(data);
-  console.log(data);
+  
+  const formattedData = data.map(user => {
+    const sortedCargos = user.cargos_usuarios
+        .sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio));
+
+    const cargoName = sortedCargos[0]?.cargos?.cargo || 'Sin Cargo';
+    
+    return {
+      ...user,
+      cargo_nombre: cargoName 
+    };
+  });
+
+  setUsuarios(formattedData);
 }
 
 return (
   <div className="page-container">
-      <h1>User List</h1>
+      <h1>Lista de Usuarios</h1>
       <UserList usuarios={usuarios} />
   </div>
 );

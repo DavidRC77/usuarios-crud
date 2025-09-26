@@ -18,6 +18,7 @@ import CreateTickeoPage from "./pages/CreateTickeoPage";
 import EditTickeoPage from "./pages/EditTickeoPage";
 import TickeoDeletePage from "./pages/TickeoDeletePage";
 import ConsultaListPage from "./pages/ConsultaListPage";
+import EditUserCargoPage from "./pages/EditUserCargoPage";
 import './App.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="tickeos/edit/:id" element={<EditTickeoPage/>}/>
         <Route path="tickeos/:id" element={<TickeoDeletePage/>}/>
         <Route path="Consultas" element={<ConsultaListPage/>}/>
+        <Route path="users/edit-cargo" element={<EditUserCargoPage/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

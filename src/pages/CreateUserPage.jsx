@@ -20,7 +20,6 @@ const createUser = async(userData) => {
     return data;
 }
     const handleSubmit = (userData) => {  
-        console.log('Creating user:', userData);
         createUser(userData);
         navigate('/users');
     };

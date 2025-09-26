@@ -6,56 +6,69 @@ const UserDeletePage = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const [usuario,setUsuario] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(()=>{
         getUser();
     },[]);
 
     const getUser = async() => {
+        setLoading(true);
         const {data,error} = await supabase
                                     .from("usuarios")
                                     .select("*")
                                     .eq("id",id)
                                     .single();
+        
         if(error){
             console.error(error);
+            setLoading(false);
             return;
         }
-        console.log(data);
+        
         setUsuario(data);
+        setLoading(false);
     }
 
     const deleteUser = async() => {
-        const {data,error} = await supabase
-                                    .from("usuarios")
-                                    .delete()
-                                    .eq("id",id);
-        if(error){
-            console.error(error);
+        // Llama a la función de la base de datos (RPC) que hace la eliminación en cascada
+        const { error } = await supabase.rpc('delete_user_and_dependencies', {
+            user_id_to_delete: id 
+        });
+        
+        if (error) {
+            alert(`Error al eliminar. Mensaje: ${error.message}.`);
             return null;
         }
-        return data;
+        return true;
     }
 
-    const handleDelete = () => {
-        console.log('Deleting user with id:', id);
-        deleteUser();
-        navigate('/users');
+    const handleDelete = async () => {
+        const success = await deleteUser(); 
+        if (success) {
+            alert(`Usuario ${usuario.nombre} eliminado exitosamente.`);
+            navigate('/users');
+        }
     };
 
     return (
-        <div>
-            <h2>Delete User</h2>
-            {usuario ? (
+        <div className="page-container">
+            <h2>Eliminar Usuario</h2>
+            {loading ? (
+                <p>Cargando datos del usuario...</p>
+            ) : usuario ? (
                 <div>
-                    <p>Are you sure you want to delete the user: <strong>{usuario.nombre}</strong>?</p>
-                    <button onClick={handleDelete}>Yes, Delete</button>
+                    <p>¿Está seguro que desea eliminar al usuario: <strong>{usuario.nombre}</strong>?</p>
+                    <div className="form-actions">
+                        <button onClick={handleDelete} className="btn btn-danger">Sí, Eliminar</button>
+                        <button onClick={() => navigate('/users')} className="btn btn-secondary" style={{marginLeft: '10px'}}>Cancelar</button>
+                    </div>
                 </div>
-            ) : (
-                <p>Loading user data...</p>
+            ) : ( 
+                 <p>Error: Usuario no pudo ser encontrado.</p>
             )}
         </div>
     );
 };
 
-export default UserDeletePage;  
+export default UserDeletePage;

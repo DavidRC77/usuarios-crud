@@ -8,7 +8,12 @@ const UserList = ({ usuarios,onDelete,Loading }) => {
         <div className="user-page">
             <div className="user-header">
                 <h2>Lista de Usuarios {usuarios.length}</h2>
-                <Link to="/users/create" className="btn btn-primary">Crear Usuario</Link>
+                <div className="user-actions-header">
+                    <Link to="/users/create" className="btn btn-primary">Crear Usuario</Link>
+                    <Link to="/users/edit-cargo" className="btn btn-secondary" style={{marginLeft: '10px'}}>
+                        Modificar Cargo
+                    </Link>
+                </div>
             </div>
             <div className="user-list">
                 {usuarios.length === 0 ? (
